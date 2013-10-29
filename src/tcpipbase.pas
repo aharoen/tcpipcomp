@@ -57,6 +57,13 @@ resourcestring
 
 implementation
 
+{$IF ((FPC_VERSION >= 2) and (FPC_RELEASE <= 6))}
+function GetTickCount64: Int64;
+begin
+  Result := Trunc(Now * HoursPerDay * MinsPerHour * SecsPerMin * MSecsPerSec);
+end;
+{$ENDIF}
+
 { TTcpIpBaseSocket }
 
 constructor TTcpIpBaseSocket.Create(const AHost: string;
