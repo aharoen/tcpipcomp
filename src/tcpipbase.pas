@@ -17,7 +17,7 @@ unit TcpIpBase;
 interface
 
 uses
-  TcpIpUtils, SysUtils;
+  TcpIpUtils, SysUtils, RtlConsts;
 
 type
 
@@ -46,6 +46,7 @@ type
     function Waiting: Integer; virtual; abstract;
     function Write(const ABuffer; ACount: LongInt): LongInt; virtual; abstract;
     function Read(var ABuffer; ACount: LongInt): LongInt; virtual; abstract;
+    procedure WriteBuffer(const ABuffer; ACount: LongInt);
     function Send(const ABuffer; ACount: LongInt;
       const ATimeOut: Integer): LongInt;
     function Receive(var ABuffer; ACount: LongInt;
@@ -74,6 +75,12 @@ begin
 end;
 
 { TTcpIpSocket }
+
+procedure TTcpIpSocket.WriteBuffer(const ABuffer; ACount: LongInt);
+begin
+  if Send(ABuffer, ACount, -1) <> ACount then
+    raise ETcpIpError.Create(SWriteError);
+end;
 
 function TTcpIpSocket.Send(const ABuffer; ACount: LongInt;
   const ATimeOut: Integer): LongInt;
