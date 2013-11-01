@@ -87,6 +87,7 @@ function TTcpIpSocket.Send(const ABuffer; ACount: LongInt;
 var
   VPByte: PByte;
   VEndTick: QWord;
+  VInfinite: Boolean;
   VWriteCount: LongInt;
 begin
   if not IsConnected or (ACount < 1) then
@@ -95,7 +96,11 @@ begin
     Exit;
   end;
   Result := ACount;
-  VEndTick := GetTickCount64 + ATimeOut;
+  VInfinite := ATimeOut = TCP_IP_INFINITE_TIMEOUT;
+  if VInfinite then
+    VEndTick := 0
+  else
+    VEndTick := GetTickCount64 + ATimeOut;
   VPByte := @ABuffer;
   while ACount > 0 do
   begin
@@ -108,8 +113,9 @@ begin
       Dec(ACount, VWriteCount);
     end
     else
-    if GetTickCount64 > VEndTick then
-      Break;
+      if not VInfinite then
+        if GetTickCount64 > VEndTick then
+          Break;
   end;
   Dec(Result, ACount);
 end;
@@ -145,9 +151,9 @@ begin
       Dec(ACount, VReadCount);
     end
     else
-    if not VInfinite then
-      if GetTickCount64 > VEndTick then
-        Break;
+      if not VInfinite then
+        if GetTickCount64 > VEndTick then
+          Break;
   end;
   Dec(Result, ACount);
 end;
