@@ -20,7 +20,7 @@
     </CompilerOptions>
     <Description Value="TCP/IP client/server."/>
     <License Value="Please see the LICENSE file."/>
-    <Version Major="1" Release="2"/>
+    <Version Major="1" Release="3"/>
     <Files Count="4">
       <Item1>
         <Filename Value="..\src\tcpipbase.pas"/>

@@ -33,6 +33,7 @@ type
     FClosing: Boolean;
   public
     destructor Destroy; override;
+    procedure Close;
     property Closing: Boolean read FClosing;
   end;
 
@@ -64,9 +65,16 @@ implementation
 
 destructor TInetSocketEx.Destroy;
 begin
+  Close;
+  inherited Destroy;
+end;
+
+procedure TInetSocketEx.Close;
+begin
+  if FClosing then
+    Exit;
   FClosing := True;
   FPShutdown(Handle, SHUT_RDWR);
-  inherited Destroy;
 end;
 
 { TTcpIpClientSocket }
