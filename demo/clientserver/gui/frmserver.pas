@@ -111,7 +111,7 @@ begin
   VList := FClients.LockList;
   try
     for VItem in VList do
-      if Assigned(VClient) and not VClient.Finished then
+      if Assigned(VClient) and not VClient.FreeOnTerminate then
       begin
         VClient.FreeOnTerminate := False;
         VClient.Terminate;
@@ -144,7 +144,7 @@ destructor TClientThread.Destroy;
 begin
   if Assigned(FOwner) then
     FOwner.Clients.Remove(Self);
-  if not Finished then
+  if not FreeOnTerminate then
     FSocket.Free;
   inherited Destroy;
 end;
@@ -191,7 +191,7 @@ end;
 
 procedure TfrServer.FormDestroy(Sender: TObject);
 begin
-  if Assigned(FServer) and not FServer.Finished then
+  if Assigned(FServer) and not FServer.FreeOnTerminate then
   begin
     FServer.FreeOnTerminate := False;
     FServer.Terminate;

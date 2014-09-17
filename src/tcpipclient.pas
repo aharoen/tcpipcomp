@@ -22,7 +22,7 @@ uses
 {$ELSE}
   WinSock2,
 {$ENDIF}
-  TcpIpBase, TcpIpUtils, SSockets, Sockets;
+  TcpIpBase, TcpIpUtils, SSockets, Sockets, sysutils;
 
 type
 
@@ -60,6 +60,8 @@ type
   end;
 
 implementation
+
+uses termio;
 
 { TInetSocketEx }
 
@@ -101,18 +103,26 @@ begin
   Result := Assigned(FSocket) and (FSocket.Handle > 0);
 end;
 
-function TTcpIpClientSocket.Waiting: Integer;
-var
-  L: DWord;
+procedure  _IoctlSocket(s: TSocket; cmd: DWORD; var arg: integer);
 begin
-  Result := 0;
-  L := 0;
-{$IFDEF UNIX}
-  if FPIOCtl(FSocket.Handle, $541B, @L) = 0 then
-{$ELSE}
-  if IOCtlSocket(FSocket.Handle, FIONREAD, L) = 0 then
-{$ENDIF}
-    Result := L;
+  if fpIoctl(s, cmd, @arg) <> 0 then
+     raise exception.create('dada');
+end;
+
+function TTcpIpClientSocket.Waiting: Integer;
+//var
+ // L: DWord;
+begin
+  Result := 1;
+  //L := 0;
+  _IoctlSocket (FSocket.Handle, FIONREAD, Result) ;
+//  //synsock.IoctlSocket   (
+//{$IFDEF UNIX}
+//  if FPIOCtl(FSocket.Handle, $541B, @L) = 0 then
+//{$ELSE}
+//  if IOCtlSocket(FSocket.Handle, FIONREAD, L) = 0 then
+//{$ENDIF}
+ //   Result := L;
   if Result > $10000 then
     Result := $10000;
 end;

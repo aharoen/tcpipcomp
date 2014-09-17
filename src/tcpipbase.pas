@@ -47,6 +47,9 @@ type
     function Write(const ABuffer; ACount: LongInt): LongInt; virtual; abstract;
     function Read(var ABuffer; ACount: LongInt): LongInt; virtual; abstract;
     procedure WriteBuffer(const ABuffer; ACount: LongInt);
+    procedure ReadBuffer(var ABuffer; ACount: LongInt);
+    procedure WriteStr(const s : AnsiString);
+    function ReadStr(ACount: LongInt): AnsiString;
     function Send(const ABuffer; ACount: LongInt;
       const ATimeOut: Integer): LongInt;
     function Receive(var ABuffer; ACount: LongInt;
@@ -80,6 +83,23 @@ procedure TTcpIpSocket.WriteBuffer(const ABuffer; ACount: LongInt);
 begin
   if Send(ABuffer, ACount, -1) <> ACount then
     raise ETcpIpError.Create(SWriteError);
+end;
+
+procedure TTcpIpSocket.ReadBuffer(var ABuffer; ACount : LongInt);
+begin
+  if Receive(ABuffer, ACount, -1) <> ACount then
+    raise ETcpIpError.Create(SReadError);
+end;
+
+procedure TTcpIpSocket.WriteStr(const s : AnsiString);
+begin
+  WriteBuffer(Pointer(s)^, Length(s));
+end;
+
+function TTcpIpSocket.ReadStr(ACount : LongInt) : AnsiString;
+begin
+  SetLength(Result, ACount);
+  ReadBuffer(Pointer(Result)^, Length(Result));
 end;
 
 function TTcpIpSocket.Send(const ABuffer; ACount: LongInt;
